@@ -60,3 +60,44 @@ print (len(words), "unique lemmatized words", words)
 
 pickle.dump(words, open("words.pkl", "wb"))
 pickle.dump(classes, open("classes.pkl", "wb"))
+
+
+# create training data
+training = []
+
+ # create an empty array for the output
+output_array = [0] * len(classes)
+
+for doc in documents:
+
+    # initialize our bag of words
+    bag = []
+
+    # list of tokenized word for the patterns
+    pattern_words = doc[0]
+    
+    # lematize each word - create a base word in attempt to represent related words
+
+    pattern_words = [wnl.lemmatize(word.lower()) for word in pattern_words]
+
+
+    # create bag of word array with 1 if word match found in current pattern
+    for w in words:
+        bag.append(1) if w in pattern_words else bag.append(0)
+
+
+    # output is 0 for every tag and 1 for current tag in each pattern
+
+    output_row = list(output_array)
+    output_row[classes.index(doc[1])] = 1
+
+    training.append([bag, output_row])
+
+# shuffle features and turn into np array
+random.shuffle(training)
+training = np.array(training)
+
+# create train and test lists. X - patterns, Y - intents
+train_x = list(training[:,0])
+train_y = list(training[:,1])
+print("Training data created")
